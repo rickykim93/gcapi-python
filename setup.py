@@ -12,7 +12,7 @@ setup(
 	url='https://github.com/rickykim93/gcapi-python',
 	description='Unofficial Python library for Gain Capital API from Forex.com',
 	long_description=open(path.join(here, 'README.md'), encoding='utf-8').read(),
-	long_description_content_Type="text/markdown",
+	long_description_content_type="text/markdown",
 	packages=find_packages(),
 	include_package_data=True,
 	install_requires=[
