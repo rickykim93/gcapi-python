@@ -6,7 +6,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
 	name='gcapi-python',
-	version='0.0.2',
+	version='0.0.3',
 	author='Kyu Mok (Ricky) Kim',
 	author_email='rickykim93@hotmail.com',
 	url='https://github.com/rickykim93/gcapi-python',
