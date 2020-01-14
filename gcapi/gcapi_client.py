@@ -1,5 +1,6 @@
 import requests
 import json
+from gcapi.gcapi_exception import GCapiException
 
 class GCapiClient:
 	def __init__(self, username, password, appkey, proxies=None):
@@ -12,6 +13,8 @@ class GCapiClient:
 		}
 		r = requests.post(self.rest_url + '/session', headers=headers, proxies=proxies, json=data)
 		resp = json.loads(r.text)
+		if resp['StatusCode']!=1:
+			raise GCapiException(resp)
 		session = resp['Session']
 		headers = {
 			'Content-Type': 'application/json',
@@ -32,6 +35,8 @@ class GCapiClient:
 		"""
 		r=self.session.get(self.rest_url + '/UserAccount/ClientAndTradingAccount')
 		resp = json.loads(r.text)
+		if resp['StatusCode']!=1:
+			raise GCapiException(resp)
 		if get is not None:
 			return resp['TradingAccounts'][0][get]
 		else:
@@ -45,6 +50,8 @@ class GCapiClient:
 		"""
 		r = self.session.get(self.rest_url + '/margin/ClientAccountMargin')
 		resp = json.loads(r.text)
+		if resp['StatusCode']!=1:
+			raise GCapiException(resp)
 		if get is not None:
 			return resp[get]
 		else:
@@ -59,6 +66,8 @@ class GCapiClient:
 		"""
 		r = self.session.get(self.rest_url + f'/cfd/markets?MarketName={market_name}')
 		resp = json.loads(r.text)
+		if resp['StatusCode']!=1:
+			raise GCapiException(resp)
 		if get is not None:
 			return resp['Markets'][0][get]
 		else:
@@ -88,6 +97,8 @@ class GCapiClient:
 			else:
 				r = self.session.get(self.rest_url + f'/market/{market_id}/tickhistory?PriceTicks={num_ticks}')
 		resp = json.loads(r.text)
+		if resp['StatusCode']!=1:
+			raise GCapiException(resp)
 		if num_ticks==1:
 			return resp['PriceTicks'][0]['Price']
 		else:
@@ -136,4 +147,6 @@ class GCapiClient:
 			trade_details['IfDone'] = [ifdone]
 		r = self.session.post(self.rest_url + api_url, json=trade_details)
 		resp = json.loads(r.text)
+		if resp['StatusCode']!=1:
+			raise GCapiException(resp)
 		return resp
