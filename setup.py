@@ -1,0 +1,22 @@
+from setuptools import setup, find_packages
+from codecs import open
+from os import path
+
+here = path.abspath(path.dirname(__file__))
+
+setup(
+	name='gcapi-python',
+	version='0.0.1',
+	author='Kyu Mok (Ricky) Kim',
+	author_email='rickykim93@hotmail.com',
+	url='https://github.com/rickykim93/gcapi-python',
+	description='Unofficial Python library for Gain Capital API from Forex.com',
+	long_description=open(path.join(here, 'README.md'), encoding='utf-8').read(),
+	long_description_content_Type="text/markdown",
+	packages=find_packages(),
+	include_package_data=True,
+	install_requires=[
+		'requests>=2.22.0'
+	],
+	test_suite='tests',
+)
