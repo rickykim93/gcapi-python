@@ -37,6 +37,7 @@ class GCapiClient:
 		resp = json.loads(r.text)
 		if resp['StatusCode']!=1:
 			raise GCapiException(resp)
+		self.trading_account_id = resp['TradingAccounts'][0]['TradingAccountId']
 		if get is not None:
 			return resp['TradingAccounts'][0][get]
 		else:
@@ -52,6 +53,7 @@ class GCapiClient:
 		resp = json.loads(r.text)
 		if resp['StatusCode']!=1:
 			raise GCapiException(resp)
+		self.cash = resp['Cash']
 		if get is not None:
 			return resp[get]
 		else:
@@ -68,12 +70,14 @@ class GCapiClient:
 		resp = json.loads(r.text)
 		if resp['StatusCode']!=1:
 			raise GCapiException(resp)
+		self.market_name = market_name
+		self.market_id = resp['Markets'][0]['MarketId']
 		if get is not None:
 			return resp['Markets'][0][get]
 		else:
 			return resp
 
-	def get_prices(self, market_id, num_ticks=None, from_ts=None, to_ts=None):
+	def get_prices(self, market_id=None, num_ticks=None, from_ts=None, to_ts=None):
 		"""
 		Get prices
 		:param market_id: market ID
@@ -82,6 +86,8 @@ class GCapiClient:
 		:param to_ts: to timestamp UTC
 		:return: price data
 		"""
+		if market_id is None:
+			market_id = self.market_id
 		if from_ts is not None and to_ts is not None:
 			r = self.session.get(
 				self.rest_url + f'/market/{market_id}/tickhistorybetween?fromTimeStampUTC={from_ts}&toTimestampUTC={to_ts}')
@@ -104,7 +110,7 @@ class GCapiClient:
 		else:
 			return resp
 
-	def trade_order(self, quantity, offer_price, direction, trading_acc_id, market_id, market_name, stop_loss=None,
+	def trade_order(self, quantity, offer_price, direction, trading_acc_id=None, market_id=None, market_name=None, stop_loss=None,
 					take_profit=None, trigger_price=None):
 		"""
 		Makes a new trade order
@@ -119,6 +125,12 @@ class GCapiClient:
 		:param trigger_price: trigger price for stop/limit orders
 		:return:
 		"""
+		if trading_acc_id is None:
+			trading_acc_id = self.trading_account_id
+		if market_id is None:
+			market_id = self.market_id
+		if market_name is None:
+			market_name = self.market_name
 		api_url="/order/newtradeorder"
 		direction=direction.lower()
 		if direction=='buy':
