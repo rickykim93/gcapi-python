@@ -35,13 +35,14 @@ class GCapiClient:
 		"""
 		r=self.session.get(self.rest_url + '/UserAccount/ClientAndTradingAccount')
 		resp = json.loads(r.text)
-		if resp['StatusCode']!=1:
+		try:
+			self.trading_account_id = resp['TradingAccounts'][0]['TradingAccountId']
+			if get is not None:
+				return resp['TradingAccounts'][0][get]
+			else:
+				return resp
+		except:
 			raise GCapiException(resp)
-		self.trading_account_id = resp['TradingAccounts'][0]['TradingAccountId']
-		if get is not None:
-			return resp['TradingAccounts'][0][get]
-		else:
-			return resp
 
 	def get_margin_info(self, get=None):
 		"""
@@ -51,13 +52,14 @@ class GCapiClient:
 		"""
 		r = self.session.get(self.rest_url + '/margin/ClientAccountMargin')
 		resp = json.loads(r.text)
-		if resp['StatusCode']!=1:
+		try:
+			self.cash = resp['Cash']
+			if get is not None:
+				return resp[get]
+			else:
+				return resp
+		except:
 			raise GCapiException(resp)
-		self.cash = resp['Cash']
-		if get is not None:
-			return resp[get]
-		else:
-			return resp
 
 	def get_market_info(self, market_name, get=None):
 		"""
@@ -68,14 +70,15 @@ class GCapiClient:
 		"""
 		r = self.session.get(self.rest_url + f'/cfd/markets?MarketName={market_name}')
 		resp = json.loads(r.text)
-		if resp['StatusCode']!=1:
+		try:
+			self.market_name = market_name
+			self.market_id = resp['Markets'][0]['MarketId']
+			if get is not None:
+				return resp['Markets'][0][get]
+			else:
+				return resp
+		except:
 			raise GCapiException(resp)
-		self.market_name = market_name
-		self.market_id = resp['Markets'][0]['MarketId']
-		if get is not None:
-			return resp['Markets'][0][get]
-		else:
-			return resp
 
 	def get_prices(self, market_id=None, num_ticks=None, from_ts=None, to_ts=None):
 		"""
@@ -103,12 +106,13 @@ class GCapiClient:
 			else:
 				r = self.session.get(self.rest_url + f'/market/{market_id}/tickhistory?PriceTicks={num_ticks}')
 		resp = json.loads(r.text)
-		if resp['StatusCode']!=1:
+		try:
+			if num_ticks==1:
+				return resp['PriceTicks'][0]['Price']
+			else:
+				return resp
+		except:
 			raise GCapiException(resp)
-		if num_ticks==1:
-			return resp['PriceTicks'][0]['Price']
-		else:
-			return resp
 
 	def trade_order(self, quantity, offer_price, direction, trading_acc_id=None, market_id=None, market_name=None, stop_loss=None,
 					take_profit=None, trigger_price=None):
@@ -159,6 +163,4 @@ class GCapiClient:
 			trade_details['IfDone'] = [ifdone]
 		r = self.session.post(self.rest_url + api_url, json=trade_details)
 		resp = json.loads(r.text)
-		if resp['StatusCode']!=1:
-			raise GCapiException(resp)
 		return resp
