@@ -1,6 +1,8 @@
 import requests
 import json
+import pandas as pd
 from gcapi.gcapi_exception import GCapiException
+from gcapi.gcapi_tools import format_date, check_interval, check_span
 
 class GCapiClient:
 	def __init__(self, username, password, appkey, proxies=None):
@@ -113,6 +115,50 @@ class GCapiClient:
 				return resp
 		except:
 			raise GCapiException(resp)
+
+	def get_ohlc(self, market_id=None, num_ticks=None, interval="HOUR", span=1, from_ts=None, to_ts=None):
+		"""
+		Get the open, high, low, close of a specific market_id
+		:param market_id: market ID
+		:param num_ticks: number of price ticks/data to retrieve
+		:param interval: MINUTE, HOUR or DAY tick interval
+		:param span: it can be a combination of span with interval, 1Hour, 15 MINUTE
+		:param from_ts: from timestamp UTC
+		:param to_ts: to timestamp UTC
+		:return: ohlc dataframe
+		"""
+
+
+		if market_id is None:
+			market_id = self.market_id
+		interval = check_interval(interval)
+		span = check_span(interval, span)
+		if from_ts is not None and to_ts is not None:
+			r = self.session.get(
+				self.rest_url + f'/market/{market_id}/barhistorybetween?interval={interval}&span={span}fromTimeStampUTC={from_ts}&toTimestampUTC={to_ts}')
+		else:
+			if not num_ticks:
+				num_ticks=1
+			if from_ts is not None:
+				r = self.session.get(
+					self.rest_url + f'/market/{market_id}/barhistorybefore?interval={interval}&span={span}&maxResults={num_ticks}&toTimeStampUTC={to_ts}')
+			elif to_ts is not None:
+				r = self.session.get(
+					self.rest_url + f'/market/{market_id}/tickhistoryafter?interval={interval}&span={span}&maxResults={num_ticks}&fromTimeStampUTC={from_ts}')
+			else:
+				r = self.session.get(self.rest_url + f'/market/{market_id}/barhistory?interval={interval}&span={span}&PriceBars={num_ticks}')
+		resp = json.loads(r.text)
+
+		try:
+			if num_ticks==1:
+				return resp.get('PriceBars')[0]
+			else:
+				df_ohlc = pd.DataFrame(resp.get('PriceBars'))
+				df_ohlc['BarDate'] = df_ohlc['BarDate'].map(format_date)
+				return df_ohlc
+		except:
+			raise GCapiException(resp)
+
 
 	def trade_order(self, quantity, offer_price, direction, trading_acc_id=None, market_id=None, market_name=None, stop_loss=None,
 					take_profit=None, trigger_price=None):
