@@ -13,6 +13,7 @@ Python package for [Gain Capital API](http://docs.labs.gaincapital.com/) used fo
         * [Market Information](#Market-Information)
         * [Pricing](#Pricing)
         * [Trading](#Trading)
+    * [Examples](#Examples)
 * [Contact](#Contact)
 
 ## Getting Started
@@ -36,7 +37,7 @@ Initialize with [Forex.com](https://www.forex.com/en-ca/) credentials and app ke
 api = GCapiClient(username='usr', password='***', appkey='***', proxies=None)
 ```
 
-### Functions
+### Endpoints
 
 #### Account Information
 
@@ -62,12 +63,20 @@ api.get_market_info(market_name,get=None)
 api.get_prices(market_id=None, num_ticks=None, from_ts=None, to_ts=None)
 ```
 
+```python
+api.get_ohlc(market_id=None, num_ticks=None, interval="HOUR", span=1, from_ts=None, to_ts=None)
+```
+
 #### Trading
 
 ```python
 api.trade_order(quantity, offer_price, direction, trading_acc_id=None, market_id=None, market_name=None, stop_loss=None, 
                 take_profit=None, trigger_price=None)
 ```
+
+### Examples
+
+Click [here](https://github.com/rickykim93/gcapi-python/tree/master/examples) to see examples
 
 ## Contact
 Please contact [**Kyu Mok (Ricky) Kim**](mailto:rickykim93@hotmail.com) if you have any questions, suggestions, or feedback.

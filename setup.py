@@ -6,7 +6,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
 	name='gcapi-python',
-	version='0.0.4',
+	version='0.0.5',
 	author='Kyu Mok (Ricky) Kim',
 	author_email='rickykim93@hotmail.com',
 	url='https://github.com/rickykim93/gcapi-python',
@@ -16,7 +16,8 @@ setup(
 	packages=find_packages(),
 	include_package_data=True,
 	install_requires=[
-		'requests>=2.22.0'
+		'requests>=2.22.0',
+		'pandas>=0.23.4'
 	],
 	test_suite='tests',
 )
