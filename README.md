@@ -13,6 +13,7 @@ Python package for [Gain Capital API](http://docs.labs.gaincapital.com/) used fo
         * [Market Information](#Market-Information)
         * [Pricing](#Pricing)
         * [Trading](#Trading)
+        * [List Open Positions](#List-Open-Positions)
     * [Examples](#Examples)
 * [Contact](#Contact)
 
@@ -72,6 +73,12 @@ api.get_ohlc(market_id=None, num_ticks=None, interval="HOUR", span=1, from_ts=No
 ```python
 api.trade_order(quantity, offer_price, direction, trading_acc_id=None, market_id=None, market_name=None, stop_loss=None, 
                 take_profit=None, trigger_price=None)
+```
+
+#### List Open Positions
+
+```python
+api.list_open_positions(trading_acc_id=None)
 ```
 
 ### Examples
