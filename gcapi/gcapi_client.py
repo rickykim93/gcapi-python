@@ -210,3 +210,11 @@ class GCapiClient:
 		r = self.session.post(self.rest_url + api_url, json=trade_details)
 		resp = json.loads(r.text)
 		return resp
+
+	def list_open_positions(self, trading_acc_id=None):
+		if trading_acc_id is None:
+			trading_acc_id = self.trading_account_id
+		api_url=f"/order/openpositions?TradingAccountId={trading_acc_id}"
+		r = self.session.get(self.rest_url + api_url)
+		resp = json.loads(r.text)
+		return resp
