@@ -61,7 +61,7 @@ api.get_market_info(market_name,get=None)
 #### Pricing
 
 ```python
-api.get_prices(market_id=None, num_ticks=None, from_ts=None, to_ts=None)
+api.get_prices(market_id=None, num_ticks=None, from_ts=None, to_ts=None, price_type=None)
 ```
 
 ```python
