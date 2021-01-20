@@ -203,7 +203,7 @@ class GCapiClient:
 			"OfferPrice": offer_price
 		}
 		if trigger_price is not None:
-			trade_details['TriggerPridce']=trigger_price
+			trade_details['TriggerPrice']=trigger_price
 			api_url="/order/newstoplimitorder"
 		ifdone = {}
 		if stop_loss:
