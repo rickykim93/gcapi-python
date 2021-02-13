@@ -140,7 +140,7 @@ class GCapiClient:
 		span = check_span(interval, span)
 		if from_ts is not None and to_ts is not None:
 			r = self.session.get(
-				self.rest_url + f'/market/{market_id}/barhistorybetween?interval={interval}&span={span}fromTimeStampUTC={from_ts}&toTimestampUTC={to_ts}')
+				self.rest_url + f'/market/{market_id}/barhistorybetween?interval={interval}&span={span}&fromTimeStampUTC={from_ts}&toTimestampUTC={to_ts}')
 		else:
 			if not num_ticks:
 				num_ticks=1
