@@ -88,4 +88,6 @@ Click [here](https://github.com/rickykim93/gcapi-python/tree/master/examples) to
 ## Contact
 Please contact [**Kyu Mok (Ricky) Kim**](mailto:rickykim93@hotmail.com) if you have any questions, suggestions, or feedback.
 
+For any other questions beside this tool, post your questions on [http://faq.labs.gaincapital.com/](http://faq.labs.gaincapital.com/)
+
 Website: [rickykim.net](https://rickykim.net/)
