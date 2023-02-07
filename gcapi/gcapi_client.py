@@ -2,6 +2,7 @@ import requests
 import json
 import pandas as pd
 from gcapi.gcapi_exception import GCapiException
+from gcapi.gcapi_streaming import GCapiStreamingClient
 from gcapi.gcapi_tools import format_date, check_interval, check_span
 
 class GCapiClient:
@@ -15,7 +16,7 @@ class GCapiClient:
 		}
 		r = requests.post(self.rest_url + '/session', headers=headers, proxies=proxies, json=data)
 		resp = json.loads(r.text)
-		if resp['StatusCode']!=1:
+		if resp['StatusCode'] != 1:
 			raise GCapiException(resp)
 		session = resp['Session']
 		headers = {
@@ -27,7 +28,9 @@ class GCapiClient:
 			s.headers = headers
 		if proxies is not None:
 			s.proxies.update(proxies)
-		self.session=s
+		self.session = s
+		self.session_id = session
+		self.username = username
 
 	def get_account_info(self, get=None):
 		"""
@@ -35,7 +38,7 @@ class GCapiClient:
 		:param get: retrieve specific information (e.g. TradingAccountId)
 		:return: trading account information
 		"""
-		r=self.session.get(self.rest_url + '/UserAccount/ClientAndTradingAccount')
+		r = self.session.get(self.rest_url + '/UserAccount/ClientAndTradingAccount')
 		resp = json.loads(r.text)
 		try:
 			self.trading_account_id = resp['TradingAccounts'][0]['TradingAccountId']
@@ -62,6 +65,32 @@ class GCapiClient:
 				return resp
 		except:
 			raise GCapiException(resp)
+
+	def init_streaming_client(self):
+		"""
+		Initalizes the Streaming Client
+		:return: Streaming Client Object
+		"""
+		self.stream_client = GCapiStreamingClient(username=self.username,session_id=self.session_id)
+		
+		return self.stream_client
+
+	def subscribe_to_streaming(self, market_id_list):
+		"""
+		Connects to the Streaming Service
+		:param market_id_list: List of the market IDs for the subscription service
+		"""
+		subscription_keys = []
+		for market_id in market_id_list:
+			subscription_keys.append(f'PRICE.{market_id}')
+
+		self.stream_client.subscribe_to_streaming(subscription_keys=subscription_keys)
+	
+	def unsubscribe_to_streaming(self):
+		"""
+		Disconnects from the Streaming Service
+		"""
+		self.stream_client.unsubscribe_to_streaming()
 
 	def get_market_info(self, market_name, get=None):
 		"""
@@ -114,7 +143,7 @@ class GCapiClient:
 				r = self.session.get(self.rest_url + f'/market/{market_id}/tickhistory?PriceTicks={num_ticks}&priceType={price_type}')
 		resp = json.loads(r.text)
 		try:
-			if num_ticks==1:
+			if num_ticks == 1:
 				return resp['PriceTicks'][0]['Price']
 			else:
 				return resp
@@ -217,9 +246,43 @@ class GCapiClient:
 		return resp
 
 	def list_open_positions(self, trading_acc_id=None):
+		"""
+		Returns List of Open Positons in Trading Account
+		"""
 		if trading_acc_id is None:
 			trading_acc_id = self.trading_account_id
-		api_url=f"/order/openpositions?TradingAccountId={trading_acc_id}"
+
+		api_url = f"/order/openpositions?TradingAccountId={trading_acc_id}"
 		r = self.session.get(self.rest_url + api_url)
 		resp = json.loads(r.text)
+
+		return resp
+		
+	def list_active_orders(self, trading_acc_id=None):
+		"""
+		Returns List of Active Order in Trading Account
+		"""
+		if trading_acc_id is None:
+			trading_acc_id = self.trading_account_id
+			
+		api_url = "/order/activeorders"
+		json_data = {'TradingAccountId':self.trading_account_id, 'MaxResults':100}
+		r = self.session.post(self.rest_url + api_url, json=json_data)
+		resp = json.loads(r.text)
+		
+		return resp
+		
+	def cancel_order(self, order_id, trading_acc_id=None):
+		"""
+		Cancels an Active Order
+		:order_id: Order ID of the Order to Cancel
+		"""
+		if trading_acc_id is None:
+			trading_acc_id = self.trading_account_id
+
+		api_url = "/order/cancel"
+		json_data = {'TradingAccountId':self.trading_account_id, 'OrderId':order_id}
+		r = self.session.post(self.rest_url + api_url, json=json_data)
+		resp = json.loads(r.text)
+		
 		return resp

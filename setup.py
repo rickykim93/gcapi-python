@@ -17,7 +17,8 @@ setup(
 	include_package_data=True,
 	install_requires=[
 		'requests>=2.22.0',
-		'pandas>=0.23.4'
+		'pandas>=0.23.4',
+		'lightstreamer-client>=0.1'
 	],
 	test_suite='tests',
 )
