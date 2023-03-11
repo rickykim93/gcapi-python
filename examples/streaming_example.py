@@ -25,7 +25,7 @@ for market in market_names:
 
 # Initalize Streaming Client
 GC_Stream = GC_Client.init_streaming_client()
-GC_Client.subscribe_to_streaming(market_id_list=market_ids)
+GC_Stream.subscribe_to_streaming(market_id_list=market_ids)
 
 while True:
     real_time_data = GC_Stream.real_time_snapshot()

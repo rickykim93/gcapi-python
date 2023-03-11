@@ -5,11 +5,15 @@ class GCapiStreamingClient:
     def __init__(self, username, session_id):
         self.stream_client = LightstreamerClient(username,session_id,"https://push.cityindex.com/","STREAMINGALL")
 
-    def subscribe_to_streaming(self, subscription_keys):
+    def subscribe_to_streaming(self, market_id_list: list):
         """
 		Connects to the Streaming Service
-		:param subcription_keys: formated string with the market ID included
+		:param market_id_list: List of the market IDs for the subscription service
 		"""
+        subscription_keys = []
+        for market_id in market_id_list:
+            subscription_keys.append(f'PRICE.{market_id}')
+
         self.stream_client.connect()
         self.subscription = LightstreamerSubscription(mode="MERGE",adapter="PRICES",items=subscription_keys,fields=["Bid", "Offer", "AuditId","MarketId","TickDate"])
         self.sub_key = self.stream_client.subscribe(self.subscription)
