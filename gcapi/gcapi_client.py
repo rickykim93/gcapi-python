@@ -75,23 +75,6 @@ class GCapiClient:
 		
 		return self.stream_client
 
-	def subscribe_to_streaming(self, market_id_list):
-		"""
-		Connects to the Streaming Service
-		:param market_id_list: List of the market IDs for the subscription service
-		"""
-		subscription_keys = []
-		for market_id in market_id_list:
-			subscription_keys.append(f'PRICE.{market_id}')
-
-		self.stream_client.subscribe_to_streaming(subscription_keys=subscription_keys)
-	
-	def unsubscribe_to_streaming(self):
-		"""
-		Disconnects from the Streaming Service
-		"""
-		self.stream_client.unsubscribe_to_streaming()
-
 	def get_market_info(self, market_name, get=None):
 		"""
 		Gets market information
