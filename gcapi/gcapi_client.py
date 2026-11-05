@@ -189,8 +189,33 @@ class GCapiClient:
 			raise GCapiException(resp)
 
 
+	@staticmethod
+	def _directions(direction):
+		"""
+		Normalises direction and returns (direction, opposite_direction)
+		:param direction: buy or sell (case-insensitive)
+		"""
+		direction = direction.lower()
+		if direction == 'buy':
+			return 'buy', 'sell'
+		if direction == 'sell':
+			return 'sell', 'buy'
+		raise ValueError('Please provide buy or sell for direction')
+
+	@staticmethod
+	def _if_done(quantity, opp_direction, stop_loss=None, take_profit=None):
+		"""
+		Builds the IfDone list for stop loss / take profit legs, or None if neither is set
+		"""
+		ifdone = {}
+		if stop_loss:
+			ifdone['Stop'] = {'TriggerPrice': stop_loss, "Direction": opp_direction, 'Quantity': quantity}
+		if take_profit:
+			ifdone['Limit'] = {'TriggerPrice': take_profit, "Direction": opp_direction, 'Quantity': quantity}
+		return [ifdone] if ifdone else None
+
 	def trade_order(self, quantity, offer_price, direction, trading_acc_id=None, market_id=None, market_name=None, stop_loss=None,
-					take_profit=None, trigger_price=None):
+					take_profit=None, trigger_price=None, bid_price=None, price_tolerance=None):
 		"""
 		Makes a new trade order
 		:param quantity: quantity to trade
@@ -202,6 +227,8 @@ class GCapiClient:
 		:param stop_loss: stop loss price
 		:param take_profit: take profit price
 		:param trigger_price: trigger price for stop/limit orders
+		:param bid_price: bid price (needed by the API for some sell / stop orders); sent only if given
+		:param price_tolerance: acceptable slippage in price points; sent only if given
 		:return:
 		"""
 		if trading_acc_id is None:
@@ -211,13 +238,7 @@ class GCapiClient:
 		if market_name is None:
 			market_name = self.market_name
 		api_url="/order/newtradeorder"
-		direction=direction.lower()
-		if direction=='buy':
-			opp_direction='sell'
-		elif direction=='sell':
-			opp_direction='buy'
-		else:
-			raise ValueError('Please provide buy or sell for direction')
+		direction, opp_direction = self._directions(direction)
 		trade_details = {
 			"Direction": direction,
 			"MarketId": market_id,
@@ -226,16 +247,16 @@ class GCapiClient:
 			'TradingAccountId': trading_acc_id,
 			"OfferPrice": offer_price
 		}
+		if bid_price is not None:
+			trade_details['BidPrice'] = bid_price
+		if price_tolerance is not None:
+			trade_details['PriceTolerance'] = price_tolerance
 		if trigger_price is not None:
 			trade_details['TriggerPrice']=trigger_price
 			api_url="/order/newstoplimitorder"
-		ifdone = {}
-		if stop_loss:
-			ifdone['Stop'] = {'TriggerPrice': stop_loss, "Direction": opp_direction, 'Quantity': quantity}
-		if take_profit:
-			ifdone['Limit'] = {'TriggerPrice': take_profit, "Direction": opp_direction, 'Quantity': quantity}
-		if len(ifdone):
-			trade_details['IfDone'] = [ifdone]
+		ifdone = self._if_done(quantity, opp_direction, stop_loss, take_profit)
+		if ifdone:
+			trade_details['IfDone'] = ifdone
 		r = self.session.post(self.rest_url + api_url, json=trade_details)
 		resp = json.loads(r.text)
 		return resp

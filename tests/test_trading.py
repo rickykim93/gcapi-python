@@ -93,6 +93,46 @@ def test_stop_limit_order_with_if_done(rsps, api, samples, sent):
     )
 
 
+def test_bid_price_is_sent_when_given(rsps, api, samples, sent):
+    rsps.post(NEW_TRADE_URL, json=samples["trade_ok"])
+
+    api.trade_order(QTY, OFFER, "sell", bid_price=1.37861)
+    assert sent().json == _base_order("sell", BidPrice=1.37861)
+
+
+def test_price_tolerance_is_sent_when_given_including_zero(rsps, api, samples, sent):
+    rsps.post(NEW_TRADE_URL, json=samples["trade_ok"])
+
+    api.trade_order(QTY, OFFER, "buy", price_tolerance=0)
+    assert sent().json == _base_order(PriceTolerance=0)
+
+    api.trade_order(QTY, OFFER, "buy", price_tolerance=2.5)
+    assert sent().json == _base_order(PriceTolerance=2.5)
+
+
+def test_stop_order_with_bid_price_and_tolerance(rsps, api, samples, sent):
+    rsps.post(NEW_STOP_LIMIT_URL, json=samples["trade_ok"])
+
+    api.trade_order(QTY, OFFER, "sell", trigger_price=1.36500, bid_price=1.37861, price_tolerance=1)
+    assert sent().url == NEW_STOP_LIMIT_URL
+    assert sent().json == _base_order("sell", TriggerPrice=1.36500, BidPrice=1.37861, PriceTolerance=1)
+
+
+def test_positional_argument_order_unchanged(rsps, api, samples, sent):
+    """quantity, offer_price, direction, trading_acc_id, market_id, market_name,
+    stop_loss, take_profit, trigger_price -- as in 0.0.9."""
+    rsps.post(NEW_STOP_LIMIT_URL, json=samples["trade_ok"])
+
+    api.trade_order(QTY, OFFER, "buy", 999, 111, "EUR/USD", 1.36, 1.39, 1.365)
+    assert sent().json == _base_order(
+        TradingAccountId=999, MarketId=111, MarketName="EUR/USD", TriggerPrice=1.365,
+        IfDone=[{
+            "Stop": {"TriggerPrice": 1.36, "Direction": "sell", "Quantity": QTY},
+            "Limit": {"TriggerPrice": 1.39, "Direction": "sell", "Quantity": QTY},
+        }],
+    )
+
+
 @pytest.mark.parametrize("direction", ["long", "", "b"])
 def test_invalid_direction_raises_and_sends_nothing(rsps, api, direction):
     with pytest.raises(ValueError):
