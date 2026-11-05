@@ -333,16 +333,23 @@ class GCapiClient:
 		
 		return resp
 		
-	def cancel_order(self, order_id, trading_acc_id=None):
+	def cancel_order(self, order_id, trading_acc_id=None, market_id=None):
 		"""
 		Cancels an Active Order
-		:order_id: Order ID of the Order to Cancel
+		:param order_id: Order ID of the Order to Cancel
+		:param trading_acc_id: trading account ID
+		:param market_id: market ID of the order (required by the API since 2024); defaults to the market
+			loaded by get_market_info, and is omitted if none has been loaded
 		"""
 		if trading_acc_id is None:
 			trading_acc_id = self.trading_account_id
+		if market_id is None:
+			market_id = getattr(self, 'market_id', None)
 
 		api_url = "/order/cancel"
 		json_data = {'TradingAccountId': trading_acc_id, 'OrderId': order_id}
+		if market_id is not None:
+			json_data['MarketId'] = market_id
 		r = self.session.post(self.rest_url + api_url, json=json_data)
 		resp = json.loads(r.text)
 		

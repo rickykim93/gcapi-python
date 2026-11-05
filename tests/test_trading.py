@@ -250,13 +250,27 @@ def test_cancel_order_default_account(rsps, api, samples, sent):
     assert api.cancel_order(ORDER_ID) == samples["cancel_ok"]
     assert sent().method == "POST"
     assert sent().url == f"{BASE}/order/cancel"
-    assert sent().json == {"TradingAccountId": TRADING_ACCOUNT_ID, "OrderId": ORDER_ID}
+    assert sent().json == {"TradingAccountId": TRADING_ACCOUNT_ID, "OrderId": ORDER_ID, "MarketId": MARKET_ID}
 
 
 def test_cancel_order_explicit_account(rsps, api, samples, sent):
     rsps.post(f"{BASE}/order/cancel", json=samples["cancel_ok"])
 
     api.cancel_order(ORDER_ID, trading_acc_id=999)
+    assert sent().json == {"TradingAccountId": 999, "OrderId": ORDER_ID, "MarketId": MARKET_ID}
+
+
+def test_cancel_order_explicit_market(rsps, api, samples, sent):
+    rsps.post(f"{BASE}/order/cancel", json=samples["cancel_ok"])
+
+    api.cancel_order(ORDER_ID, market_id=111)
+    assert sent().json == {"TradingAccountId": TRADING_ACCOUNT_ID, "OrderId": ORDER_ID, "MarketId": 111}
+
+
+def test_cancel_order_without_loaded_market_omits_market_id(rsps, client, samples, sent):
+    rsps.post(f"{BASE}/order/cancel", json=samples["cancel_ok"])
+
+    client.cancel_order(ORDER_ID, trading_acc_id=999)
     assert sent().json == {"TradingAccountId": 999, "OrderId": ORDER_ID}
 
 
