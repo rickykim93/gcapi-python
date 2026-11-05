@@ -185,18 +185,28 @@ def test_get_ohlc_excludes_partial_bar_by_default(rsps, api, samples):
     assert df["Close"].iloc[-1] == 41.315
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=TypeError,
-    reason="issue #10: PartialPriceBar is always dropped; get_ohlc has no include_partial option",
-)
 def test_get_ohlc_include_partial_appends_forming_bar(rsps, api, samples):
     rsps.get(f"{MARKET}/barhistory", json=samples["bars"])
 
     df = api.get_ohlc(num_ticks=4, interval="DAY", include_partial=True)
     assert len(df) == 5
     assert df["Close"].tolist() == [43.535, 42.445, 42.885, 41.315, 40.185]
-    assert df["BarDate"].iloc[-1] == df["BarDate"].max()
+    assert df["BarDate"].iloc[-1] == pd.Timestamp(datetime(2023, 3, 10, tzinfo=timezone.utc))
+
+
+def test_get_ohlc_include_partial_when_api_returns_no_partial_bar(rsps, api, samples):
+    samples["bars"]["PartialPriceBar"] = None
+    rsps.get(f"{MARKET}/barhistory", json=samples["bars"])
+
+    df = api.get_ohlc(num_ticks=4, interval="DAY", include_partial=True)
+    assert len(df) == 4
+
+
+def test_get_ohlc_include_partial_with_between_range(rsps, api, samples):
+    rsps.get(f"{MARKET}/barhistorybetween", json=samples["bars"])
+
+    df = api.get_ohlc(interval="DAY", from_ts=FROM_TS, to_ts=TO_TS, include_partial=True)
+    assert len(df) == 5
 
 
 def test_get_ohlc_bar_dates_are_utc(rsps, api, samples):

@@ -135,7 +135,8 @@ class GCapiClient:
 		except:
 			raise GCapiException(resp)
 
-	def get_ohlc(self, market_id=None, num_ticks=None, interval="HOUR", span=1, from_ts=None, to_ts=None):
+	def get_ohlc(self, market_id=None, num_ticks=None, interval="HOUR", span=1, from_ts=None, to_ts=None,
+				 include_partial=False):
 		"""
 		Get the open, high, low, close of a specific market_id
 		:param market_id: market ID
@@ -144,7 +145,10 @@ class GCapiClient:
 		:param span: it can be a combination of span with interval, 1Hour, 15 MINUTE
 		:param from_ts: from timestamp UTC
 		:param to_ts: to timestamp UTC
-		:return: ohlc dataframe
+		:param include_partial: if True, append the still-forming bar (the API's PartialPriceBar) as the
+			last row of the DataFrame. Only completed bars are returned by default. Has no effect when
+			num_ticks is 1 (the single latest completed bar is returned as a dict).
+		:return: ohlc dataframe with a timezone-aware UTC BarDate column
 		"""
 
 
@@ -174,7 +178,11 @@ class GCapiClient:
 			if num_ticks==1:
 				return resp.get('PriceBars')[0]
 			else:
-				df_ohlc = pd.DataFrame(resp.get('PriceBars'))
+				bars = list(resp.get('PriceBars'))
+				partial = resp.get('PartialPriceBar')
+				if include_partial and partial:
+					bars.append(partial)
+				df_ohlc = pd.DataFrame(bars)
 				df_ohlc['BarDate'] = df_ohlc['BarDate'].map(format_date)
 				return df_ohlc
 		except:
