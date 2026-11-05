@@ -261,7 +261,7 @@ class GCapiClient:
 			trading_acc_id = self.trading_account_id
 			
 		api_url = "/order/activeorders"
-		json_data = {'TradingAccountId':self.trading_account_id, 'MaxResults':100}
+		json_data = {'TradingAccountId': trading_acc_id, 'MaxResults': 100}
 		r = self.session.post(self.rest_url + api_url, json=json_data)
 		resp = json.loads(r.text)
 		
@@ -276,7 +276,7 @@ class GCapiClient:
 			trading_acc_id = self.trading_account_id
 
 		api_url = "/order/cancel"
-		json_data = {'TradingAccountId':self.trading_account_id, 'OrderId':order_id}
+		json_data = {'TradingAccountId': trading_acc_id, 'OrderId': order_id}
 		r = self.session.post(self.rest_url + api_url, json=json_data)
 		resp = json.loads(r.text)
 		

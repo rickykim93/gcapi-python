@@ -128,11 +128,6 @@ def test_list_active_orders_default_account(rsps, api, samples, sent):
     assert sent().json == {"TradingAccountId": TRADING_ACCOUNT_ID, "MaxResults": 100}
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="list_active_orders ignores trading_acc_id and always sends self.trading_account_id",
-)
 def test_list_active_orders_explicit_account(rsps, api, samples, sent):
     rsps.post(f"{BASE}/order/activeorders", json=samples["active_orders"])
 
@@ -154,13 +149,19 @@ def test_cancel_order_default_account(rsps, api, samples, sent):
     assert sent().json == {"TradingAccountId": TRADING_ACCOUNT_ID, "OrderId": ORDER_ID}
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="cancel_order ignores trading_acc_id and always sends self.trading_account_id",
-)
 def test_cancel_order_explicit_account(rsps, api, samples, sent):
     rsps.post(f"{BASE}/order/cancel", json=samples["cancel_ok"])
 
     api.cancel_order(ORDER_ID, trading_acc_id=999)
     assert sent().json == {"TradingAccountId": 999, "OrderId": ORDER_ID}
+
+
+def test_explicit_account_works_without_get_account_info(rsps, client, samples, sent):
+    """Passing trading_acc_id must not require self.trading_account_id to exist."""
+    rsps.post(f"{BASE}/order/activeorders", json=samples["active_orders"])
+    rsps.post(f"{BASE}/order/cancel", json=samples["cancel_ok"])
+
+    client.list_active_orders(trading_acc_id=999)
+    assert sent().json["TradingAccountId"] == 999
+    client.cancel_order(ORDER_ID, trading_acc_id=999)
+    assert sent().json["TradingAccountId"] == 999
