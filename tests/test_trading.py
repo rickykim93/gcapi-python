@@ -1,4 +1,5 @@
 """trade_order, list_open_positions, list_active_orders, cancel_order."""
+
 import pytest
 
 from tests.conftest import BASE, MARKET_ID, MARKET_NAME, TRADING_ACCOUNT_ID
@@ -25,6 +26,7 @@ def _base_order(direction="buy", **overrides):
 
 # --- trade_order -------------------------------------------------------------
 
+
 def test_market_order_uses_stored_account_and_market(rsps, api, samples, sent):
     rsps.post(NEW_TRADE_URL, json=samples["trade_ok"])
 
@@ -38,9 +40,7 @@ def test_market_order_explicit_args_and_direction_lowercased(rsps, api, samples,
     rsps.post(NEW_TRADE_URL, json=samples["trade_ok"])
 
     api.trade_order(QTY, OFFER, "SELL", trading_acc_id=999, market_id=111, market_name="EUR/USD")
-    assert sent().json == _base_order(
-        "sell", TradingAccountId=999, MarketId=111, MarketName="EUR/USD"
-    )
+    assert sent().json == _base_order("sell", TradingAccountId=999, MarketId=111, MarketName="EUR/USD")
 
 
 def test_stop_limit_order_with_trigger_price(rsps, api, samples, sent):
@@ -75,10 +75,12 @@ def test_if_done_stop_loss_and_take_profit_on_sell(rsps, api, samples, sent):
     api.trade_order(QTY, OFFER, "sell", stop_loss=1.39000, take_profit=1.36000)
     assert sent().json == _base_order(
         "sell",
-        IfDone=[{
-            "Stop": {"TriggerPrice": 1.39000, "Direction": "buy", "Quantity": QTY},
-            "Limit": {"TriggerPrice": 1.36000, "Direction": "buy", "Quantity": QTY},
-        }],
+        IfDone=[
+            {
+                "Stop": {"TriggerPrice": 1.39000, "Direction": "buy", "Quantity": QTY},
+                "Limit": {"TriggerPrice": 1.36000, "Direction": "buy", "Quantity": QTY},
+            }
+        ],
     )
 
 
@@ -125,11 +127,16 @@ def test_positional_argument_order_unchanged(rsps, api, samples, sent):
 
     api.trade_order(QTY, OFFER, "buy", 999, 111, "EUR/USD", 1.36, 1.39, 1.365)
     assert sent().json == _base_order(
-        TradingAccountId=999, MarketId=111, MarketName="EUR/USD", TriggerPrice=1.365,
-        IfDone=[{
-            "Stop": {"TriggerPrice": 1.36, "Direction": "sell", "Quantity": QTY},
-            "Limit": {"TriggerPrice": 1.39, "Direction": "sell", "Quantity": QTY},
-        }],
+        TradingAccountId=999,
+        MarketId=111,
+        MarketName="EUR/USD",
+        TriggerPrice=1.365,
+        IfDone=[
+            {
+                "Stop": {"TriggerPrice": 1.36, "Direction": "sell", "Quantity": QTY},
+                "Limit": {"TriggerPrice": 1.39, "Direction": "sell", "Quantity": QTY},
+            }
+        ],
     )
 
 
@@ -173,20 +180,26 @@ def test_update_trade_sets_stop_loss_and_take_profit(rsps, api, samples, sent):
 
     api.update_trade(TRADE_ID, QTY, "buy", stop_loss=1.36000, take_profit=1.39000)
     assert sent().json == _base_update(
-        IfDone=[{
-            "Stop": {"TriggerPrice": 1.36000, "Direction": "sell", "Quantity": QTY},
-            "Limit": {"TriggerPrice": 1.39000, "Direction": "sell", "Quantity": QTY},
-        }]
+        IfDone=[
+            {
+                "Stop": {"TriggerPrice": 1.36000, "Direction": "sell", "Quantity": QTY},
+                "Limit": {"TriggerPrice": 1.39000, "Direction": "sell", "Quantity": QTY},
+            }
+        ]
     )
 
 
 def test_update_trade_sell_with_prices_and_tolerance(rsps, api, samples, sent):
     rsps.post(UPDATE_URL, json=samples["trade_ok"])
 
-    api.update_trade(TRADE_ID, QTY, "SELL", offer_price=1.37871, bid_price=1.37861,
-                     price_tolerance=0, stop_loss=1.39000)
+    api.update_trade(
+        TRADE_ID, QTY, "SELL", offer_price=1.37871, bid_price=1.37861, price_tolerance=0, stop_loss=1.39000
+    )
     assert sent().json == _base_update(
-        "sell", OfferPrice=1.37871, BidPrice=1.37861, PriceTolerance=0,
+        "sell",
+        OfferPrice=1.37871,
+        BidPrice=1.37861,
+        PriceTolerance=0,
         IfDone=[{"Stop": {"TriggerPrice": 1.39000, "Direction": "buy", "Quantity": QTY}}],
     )
 
@@ -206,6 +219,7 @@ def test_update_trade_invalid_direction_raises_and_sends_nothing(rsps, api):
 
 # --- list_open_positions -----------------------------------------------------
 
+
 def test_list_open_positions_default_account(rsps, api, samples, sent):
     rsps.get(f"{BASE}/order/openpositions", json=samples["open_positions"])
 
@@ -222,6 +236,7 @@ def test_list_open_positions_explicit_account(rsps, api, samples, sent):
 
 
 # --- list_active_orders ------------------------------------------------------
+
 
 def test_list_active_orders_default_account(rsps, api, samples, sent):
     rsps.post(f"{BASE}/order/activeorders", json=samples["active_orders"])

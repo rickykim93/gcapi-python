@@ -1,4 +1,5 @@
 """get_prices and get_ohlc: every endpoint branch, plus DataFrame conversion."""
+
 from datetime import datetime, timezone
 
 import pandas as pd
@@ -9,7 +10,7 @@ from gcapi.gcapi_tools import format_date
 from tests.conftest import BASE, MARKET_ID
 
 FROM_TS = 1678406400  # 2023-03-10 00:00:00 UTC
-TO_TS = 1678410000    # 2023-03-10 01:00:00 UTC
+TO_TS = 1678410000  # 2023-03-10 01:00:00 UTC
 
 MARKET = f"{BASE}/market/{MARKET_ID}"
 PATH = f"/TradingAPI/market/{MARKET_ID}"
@@ -18,6 +19,7 @@ PATH = f"/TradingAPI/market/{MARKET_ID}"
 # =============================================================================
 # get_prices
 # =============================================================================
+
 
 def test_get_prices_latest_tick_returns_single_price(rsps, api, samples, sent):
     rsps.get(f"{MARKET}/tickhistory", json=samples["ticks"])
@@ -138,8 +140,7 @@ def test_get_ohlc_between(rsps, api, samples, sent):
 
     df = api.get_ohlc(interval="HOUR", from_ts=FROM_TS, to_ts=TO_TS)
     assert sent().url == (
-        f"{MARKET}/barhistorybetween?interval=HOUR&span=1"
-        f"&fromTimeStampUTC={FROM_TS}&toTimestampUTC={TO_TS}"
+        f"{MARKET}/barhistorybetween?interval=HOUR&span=1&fromTimeStampUTC={FROM_TS}&toTimestampUTC={TO_TS}"
     )
     assert isinstance(df, pd.DataFrame)
     assert list(df.columns) == OHLC_COLUMNS
@@ -155,7 +156,10 @@ def test_get_ohlc_from_ts_only_sends_from_timestamp(rsps, api, samples, sent):
 
     api.get_ohlc(num_ticks=4, from_ts=FROM_TS)
     assert sent().params == {
-        "interval": "HOUR", "span": "1", "maxResults": "4", "fromTimeStampUTC": str(FROM_TS),
+        "interval": "HOUR",
+        "span": "1",
+        "maxResults": "4",
+        "fromTimeStampUTC": str(FROM_TS),
     }
 
 
@@ -173,7 +177,10 @@ def test_get_ohlc_to_ts_only_requests_bars_before(rsps, api, samples, sent):
     api.get_ohlc(num_ticks=4, to_ts=TO_TS)
     assert sent().path == f"{PATH}/barhistorybefore"
     assert sent().params == {
-        "interval": "HOUR", "span": "1", "maxResults": "4", "toTimeStampUTC": str(TO_TS),
+        "interval": "HOUR",
+        "span": "1",
+        "maxResults": "4",
+        "toTimeStampUTC": str(TO_TS),
     }
 
 

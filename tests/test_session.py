@@ -1,4 +1,5 @@
 """Login / session setup in GCapiClient.__init__."""
+
 import pytest
 import requests
 

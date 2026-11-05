@@ -8,6 +8,7 @@ Sample payloads follow the shapes the Gain Capital / City Index CIAPI returns
 use the API's `/Date(<epoch-ms>)/` format and are chosen to land exactly on
 00:00 UTC so that timezone bugs are visible.
 """
+
 import copy
 import json
 from types import SimpleNamespace
@@ -123,7 +124,11 @@ SAMPLES = {
             {"BarDate": _date(DAY_MS[3]), "Open": 43.015, "High": 43.745, "Low": 41.115, "Close": 41.315},
         ],
         "PartialPriceBar": {
-            "BarDate": _date(DAY_MS[4]), "Open": 41.375, "High": 41.825, "Low": 39.885, "Close": 40.185,
+            "BarDate": _date(DAY_MS[4]),
+            "Open": 41.375,
+            "High": 41.825,
+            "Low": 39.885,
+            "Close": 40.185,
         },
     },
     # POST /order/newtradeorder and /order/newstoplimitorder

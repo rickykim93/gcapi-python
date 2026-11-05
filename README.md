@@ -35,7 +35,7 @@ from gcapi import GCapiClient
 Initialize with [Forex.com](https://www.forex.com/en-ca/) credentials and app key.
 
 ```python
-api = GCapiClient(username='usr', password='***', appkey='***', proxies=None)
+api = GCapiClient(username="usr", password="***", appkey="***", proxies=None)
 ```
 
 ### Endpoints
@@ -55,7 +55,7 @@ api.get_margin_info(get=None)
 #### Market Information
 
 ```python
-api.get_market_info(market_name,get=None)
+api.get_market_info(market_name, get=None)
 ```
 
 #### Pricing
@@ -71,8 +71,17 @@ api.get_ohlc(market_id=None, num_ticks=None, interval="HOUR", span=1, from_ts=No
 #### Trading
 
 ```python
-api.trade_order(quantity, offer_price, direction, trading_acc_id=None, market_id=None, market_name=None, stop_loss=None, 
-                take_profit=None, trigger_price=None)
+api.trade_order(
+    quantity,
+    offer_price,
+    direction,
+    trading_acc_id=None,
+    market_id=None,
+    market_name=None,
+    stop_loss=None,
+    take_profit=None,
+    trigger_price=None,
+)
 ```
 
 #### List Open Positions

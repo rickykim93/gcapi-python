@@ -1,4 +1,5 @@
 """get_account_info, get_margin_info, get_market_info."""
+
 import pytest
 
 from gcapi.gcapi_exception import GCapiException
@@ -10,6 +11,7 @@ MARKETS_URL = f"{BASE}/cfd/markets"
 
 
 # --- account -----------------------------------------------------------------
+
 
 def test_get_account_info_returns_full_response(rsps, client, samples, sent):
     rsps.get(ACCOUNT_URL, json=samples["account"])
@@ -39,6 +41,7 @@ def test_get_account_info_error_raises(rsps, client, samples):
 
 # --- margin ------------------------------------------------------------------
 
+
 def test_get_margin_info_returns_full_response(rsps, client, samples, sent):
     rsps.get(MARGIN_URL, json=samples["margin"])
 
@@ -65,6 +68,7 @@ def test_get_margin_info_error_raises(rsps, client, samples):
 
 
 # --- market info -------------------------------------------------------------
+
 
 def test_get_market_info_queries_by_name(rsps, client, samples, sent):
     rsps.get(MARKETS_URL, json=samples["markets"])

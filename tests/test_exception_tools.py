@@ -1,4 +1,5 @@
 """GCapiException getters and gcapi_tools helpers."""
+
 from datetime import datetime, timezone
 
 import pytest
@@ -106,8 +107,17 @@ def test_check_span_1_is_valid(interval, span):
 
 @pytest.mark.parametrize(
     "interval, span",
-    [("HOUR", 2), ("HOUR", 4), ("HOUR", 8),
-     ("MINUTE", 2), ("MINUTE", 3), ("MINUTE", 5), ("MINUTE", 10), ("MINUTE", 15), ("MINUTE", 30)],
+    [
+        ("HOUR", 2),
+        ("HOUR", 4),
+        ("HOUR", 8),
+        ("MINUTE", 2),
+        ("MINUTE", 3),
+        ("MINUTE", 5),
+        ("MINUTE", 10),
+        ("MINUTE", 15),
+        ("MINUTE", 30),
+    ],
 )
 def test_check_span_keeps_valid_span(interval, span):
     assert check_span(interval, span) == span
