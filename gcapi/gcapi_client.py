@@ -24,8 +24,8 @@ class GCapiClient:
 			'UserName': username,
 			'Session': session
 		}
-		with requests.Session() as s:
-			s.headers = headers
+		s = requests.Session()
+		s.headers = headers
 		if proxies is not None:
 			s.proxies.update(proxies)
 		self.session = s

@@ -57,11 +57,6 @@ def test_login_error_dto_raises_gcapi_exception(rsps, samples):
     assert exc.value.get_error_code() == 4010
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="`with requests.Session() as s:` in __init__ closes the session before it is stored on self",
-)
 def test_session_is_not_closed_during_init(rsps, login, monkeypatch):
     closed = []
     original_close = requests.Session.close
