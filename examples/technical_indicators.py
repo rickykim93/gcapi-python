@@ -26,10 +26,10 @@ def convert_date(x):
 	:param x: UTC or datetime
 	:return: datetime or UTC
 	"""
-	if type(x)==datetime:
+	if isinstance(x, datetime):
 		return int(x.timestamp())
 	else:
-		return datetime.fromtimestamp(int(re.search('\d+', x).group()) / 1000)
+		return datetime.fromtimestamp(int(re.search(r'\d+', x).group()) / 1000)
 
 def calc_hourly_rsi(api, market_id, n=14):
 	"""

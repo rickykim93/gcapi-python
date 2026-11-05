@@ -37,6 +37,11 @@ test = [
     "pytest>=7.0",
     "responses>=0.23.0",
 ]
+dev = [
+    "gcapi-python[test]",
+    # pinned so local runs and CI format identically
+    "ruff==0.17.4",
+]
 
 [project.urls]
 Homepage = "https://github.com/rickykim93/gcapi-python"
@@ -47,3 +52,15 @@ packages = ["gcapi"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = [
+    "E501",  # long lines: left to the formatter (URLs in f-strings can't be split)
+    # rules that conflict with the formatter, per ruff docs
+    "W191", "E111", "E114", "E117",
+]

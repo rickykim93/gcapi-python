@@ -52,8 +52,8 @@ class GCapiClient:
 				return resp['TradingAccounts'][0][get]
 			else:
 				return resp
-		except:
-			raise GCapiException(resp)
+		except Exception as err:
+			raise GCapiException(resp) from err
 
 	def get_margin_info(self, get: str | None = None) -> Any:
 		"""
@@ -69,8 +69,8 @@ class GCapiClient:
 				return resp[get]
 			else:
 				return resp
-		except:
-			raise GCapiException(resp)
+		except Exception as err:
+			raise GCapiException(resp) from err
 
 	def init_streaming_client(self) -> GCapiStreamingClient:
 		"""
@@ -97,8 +97,8 @@ class GCapiClient:
 				return resp['Markets'][0][get]
 			else:
 				return resp
-		except:
-			raise GCapiException(resp)
+		except Exception as err:
+			raise GCapiException(resp) from err
 
 	def get_prices(self, market_id: int | None = None, num_ticks: int | None = None, from_ts: int | None = None,
 				   to_ts: int | None = None, price_type: str | None = None) -> float | JSONDict:
@@ -139,8 +139,8 @@ class GCapiClient:
 				return resp['PriceTicks'][0]['Price']
 			else:
 				return resp
-		except:
-			raise GCapiException(resp)
+		except Exception as err:
+			raise GCapiException(resp) from err
 
 	def get_ohlc(self, market_id: int | None = None, num_ticks: int | None = None, interval: str = "HOUR",
 				 span: int | str = 1, from_ts: int | None = None, to_ts: int | None = None,
@@ -193,8 +193,8 @@ class GCapiClient:
 				df_ohlc = pd.DataFrame(bars)
 				df_ohlc['BarDate'] = df_ohlc['BarDate'].map(format_date)
 				return df_ohlc
-		except:
-			raise GCapiException(resp)
+		except Exception as err:
+			raise GCapiException(resp) from err
 
 
 	@staticmethod

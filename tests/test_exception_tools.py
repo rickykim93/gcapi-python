@@ -22,7 +22,8 @@ def test_exception_getters_return_fields(samples):
 
 
 def test_exception_is_raisable_exception(samples):
-    with pytest.raises(Exception):
+    assert issubclass(GCapiException, Exception)
+    with pytest.raises(GCapiException):
         raise GCapiException(samples["error_full"])
 
 

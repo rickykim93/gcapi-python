@@ -3,7 +3,7 @@
 import sys, pathlib
 main_directory = str(pathlib.Path(__file__).parent.parent)
 sys.path.insert(1, main_directory)
-from gcapi.gcapi_client import GCapiClient
+from gcapi.gcapi_client import GCapiClient  # noqa: E402 -- after the sys.path tweak above
 
 # Trading Credentials 
 username = 'test'
