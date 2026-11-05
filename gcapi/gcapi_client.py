@@ -16,7 +16,7 @@ class GCapiClient:
 		}
 		r = requests.post(self.rest_url + '/session', headers=headers, proxies=proxies, json=data)
 		resp = json.loads(r.text)
-		if resp['StatusCode'] != 1:
+		if resp.get('StatusCode') != 1:
 			raise GCapiException(resp)
 		session = resp['Session']
 		headers = {

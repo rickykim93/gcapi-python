@@ -45,16 +45,13 @@ def test_login_non_success_status_code_raises(rsps, samples):
     assert exc.value.get_status_code() == 2
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=KeyError,
-    reason="new bug: a 401 ApiErrorResponseDTO has no 'StatusCode' key, so __init__ raises KeyError instead of GCapiException",
-)
 def test_login_error_dto_raises_gcapi_exception(rsps, samples):
     rsps.post(f"{BASE}/session", json=samples["login_error_dto"], status=401)
     with pytest.raises(GCapiException) as exc:
         GCapiClient(username=USERNAME, password=PASSWORD, appkey=APPKEY)
     assert exc.value.get_error_code() == 4010
+    assert exc.value.get_http_status() == 401
+    assert exc.value.get_status_code() is None
 
 
 def test_session_is_not_closed_during_init(rsps, login, monkeypatch):

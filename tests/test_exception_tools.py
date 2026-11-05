@@ -33,11 +33,10 @@ def test_exception_getters_return_none_for_empty_fields(samples):
     assert exc.get_additional_info() is None
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=KeyError,
-    reason="new bug: getters index the dict directly, so a missing key (e.g. StatusCode on a 401 error DTO) raises KeyError",
-)
+def test_exception_str_contains_payload(samples):
+    assert "Market is closed" in str(GCapiException(samples["error_full"]))
+
+
 def test_exception_getters_tolerate_missing_keys(samples):
     exc = GCapiException(samples["login_error_dto"])
     assert exc.get_error_code() == 4010
