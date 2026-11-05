@@ -20,5 +20,11 @@ setup(
 		'pandas>=0.23.4',
 		'lightstreamer-client>=0.1'
 	],
+	extras_require={
+		'test': [
+			'pytest>=7.0',
+			'responses>=0.23.0',
+		],
+	},
 	test_suite='tests',
 )
