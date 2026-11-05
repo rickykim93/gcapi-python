@@ -117,11 +117,13 @@ class GCapiClient:
 			if not num_ticks:
 				num_ticks=1
 			if from_ts is not None:
-				r = self.session.get(
-					self.rest_url + f'/market/{market_id}/tickhistorybefore?maxResults={num_ticks}&toTimeStampUTC={to_ts}&priceType={price_type}')
-			elif to_ts is not None:
+				# ticks after from_ts
 				r = self.session.get(
 					self.rest_url + f'/market/{market_id}/tickhistoryafter?maxResults={num_ticks}&fromTimeStampUTC={from_ts}&priceType={price_type}')
+			elif to_ts is not None:
+				# ticks before to_ts
+				r = self.session.get(
+					self.rest_url + f'/market/{market_id}/tickhistorybefore?maxResults={num_ticks}&toTimeStampUTC={to_ts}&priceType={price_type}')
 			else:
 				r = self.session.get(self.rest_url + f'/market/{market_id}/tickhistory?PriceTicks={num_ticks}&priceType={price_type}')
 		resp = json.loads(r.text)

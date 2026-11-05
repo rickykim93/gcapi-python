@@ -55,11 +55,6 @@ def _register_tick_before_after(rsps, samples):
         rsps.get(f"{MARKET}/{endpoint}", json=samples["ticks"])
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="swapped before/after branches: from_ts-only calls tickhistorybefore with toTimeStampUTC=None",
-)
 def test_get_prices_from_ts_only_requests_ticks_after(rsps, api, samples, sent):
     _register_tick_before_after(rsps, samples)
 
@@ -68,11 +63,6 @@ def test_get_prices_from_ts_only_requests_ticks_after(rsps, api, samples, sent):
     assert sent().params == {"maxResults": "3", "fromTimeStampUTC": str(FROM_TS), "priceType": "MID"}
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="swapped before/after branches: to_ts-only calls tickhistoryafter with fromTimeStampUTC=None",
-)
 def test_get_prices_to_ts_only_requests_ticks_before(rsps, api, samples, sent):
     _register_tick_before_after(rsps, samples)
 
