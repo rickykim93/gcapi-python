@@ -159,11 +159,13 @@ class GCapiClient:
 			if not num_ticks:
 				num_ticks=1
 			if from_ts is not None:
+				# bars after from_ts
+				r = self.session.get(
+					self.rest_url + f'/market/{market_id}/barhistoryafter?interval={interval}&span={span}&maxResults={num_ticks}&fromTimeStampUTC={from_ts}')
+			elif to_ts is not None:
+				# bars before to_ts
 				r = self.session.get(
 					self.rest_url + f'/market/{market_id}/barhistorybefore?interval={interval}&span={span}&maxResults={num_ticks}&toTimeStampUTC={to_ts}')
-			elif to_ts is not None:
-				r = self.session.get(
-					self.rest_url + f'/market/{market_id}/tickhistoryafter?interval={interval}&span={span}&maxResults={num_ticks}&fromTimeStampUTC={from_ts}')
 			else:
 				r = self.session.get(self.rest_url + f'/market/{market_id}/barhistory?interval={interval}&span={span}&PriceBars={num_ticks}')
 		resp = json.loads(r.text)

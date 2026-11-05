@@ -146,17 +146,10 @@ def test_get_ohlc_between(rsps, api, samples, sent):
 
 
 def _register_bar_before_after(rsps, samples):
-    # include tickhistoryafter so the current (buggy) code gets a response
-    # and the test fails on its assertion, not on a ConnectionError
-    for endpoint in ("barhistorybefore", "barhistoryafter", "tickhistoryafter"):
+    for endpoint in ("barhistorybefore", "barhistoryafter"):
         rsps.get(f"{MARKET}/{endpoint}", json=samples["bars"])
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="swapped before/after branches: from_ts-only sends toTimeStampUTC=None instead of fromTimeStampUTC",
-)
 def test_get_ohlc_from_ts_only_sends_from_timestamp(rsps, api, samples, sent):
     _register_bar_before_after(rsps, samples)
 
@@ -166,23 +159,14 @@ def test_get_ohlc_from_ts_only_sends_from_timestamp(rsps, api, samples, sent):
     }
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="get_ohlc's 'after' branch uses tickhistoryafter instead of barhistoryafter (and is also swapped)",
-)
 def test_get_ohlc_from_ts_only_uses_barhistoryafter(rsps, api, samples, sent):
     _register_bar_before_after(rsps, samples)
 
-    api.get_ohlc(num_ticks=4, from_ts=FROM_TS)
+    df = api.get_ohlc(num_ticks=4, from_ts=FROM_TS)
     assert sent().path == f"{PATH}/barhistoryafter"
+    assert isinstance(df, pd.DataFrame)
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="swapped before/after branches: to_ts-only calls tickhistoryafter with fromTimeStampUTC=None",
-)
 def test_get_ohlc_to_ts_only_requests_bars_before(rsps, api, samples, sent):
     _register_bar_before_after(rsps, samples)
 
