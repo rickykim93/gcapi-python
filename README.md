@@ -23,6 +23,7 @@ Unofficial Python client for the Gain Capital REST API
     * [Errors](#errors)
 * [Examples](#examples)
 * [Running tests](#running-tests)
+* [Changelog](#changelog)
 * [Contact](#contact)
 
 ## Getting Started
@@ -235,6 +236,10 @@ ruff check . && ruff format --check .
 ```
 
 CI runs the same checks on Python 3.10–3.13 for every push and pull request.
+
+## Changelog
+
+See [CHANGELOG.md](https://github.com/rickykim93/gcapi-python/blob/master/CHANGELOG.md).
 
 ## Contact
 

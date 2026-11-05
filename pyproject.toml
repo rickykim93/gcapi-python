@@ -47,6 +47,7 @@ dev = [
 [project.urls]
 Homepage = "https://github.com/rickykim93/gcapi-python"
 Issues = "https://github.com/rickykim93/gcapi-python/issues"
+Changelog = "https://github.com/rickykim93/gcapi-python/blob/master/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["gcapi"]
