@@ -36,6 +36,7 @@ dependencies = [
 test = [
     "pytest>=7.0",
     "responses>=0.23.0",
+    "pytest-cov>=5.0",
 ]
 dev = [
     "gcapi-python[test]",
@@ -52,6 +53,15 @@ packages = ["gcapi"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["gcapi"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+# coverage was 95.3% (statements + branches) when this gate was added; raise it as tests improve
+fail_under = 95
 
 [tool.ruff]
 target-version = "py310"
