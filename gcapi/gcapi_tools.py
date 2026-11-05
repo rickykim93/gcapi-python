@@ -20,22 +20,19 @@ def format_date(row):
 def check_span(interval, span):
     """ Checks if the span is correct for the specific interval
     :param interval: time interval, can be min, hour, day, week, month
-    :param span: span of time, it can be 1, 2, 3, 5, etc,,"""
+    :param span: span of time, it can be 1, 2, 3, 5, etc. (int or numeric string)
+    :return: span as an int if valid for the interval, otherwise 1"""
     if interval == 'HOUR':
-        if span not in [SPAN_H, str(SPAN_H)]:
-            span = 1
-            return span
-        else:
-            return span
+        valid = SPAN_H
     elif interval == 'MINUTE':
-        if span not in [SPAN_M, str(SPAN_M)]:
-            span = 1
-            return span
-        else:
-            return span
+        valid = SPAN_M
     else:
-        span = 1
-        return span
+        return 1
+    try:
+        span = int(str(span))  # via str so 2.5 is rejected, not truncated to 2
+    except (TypeError, ValueError):
+        return 1
+    return span if span in valid else 1
 
 
 def check_interval(interval):

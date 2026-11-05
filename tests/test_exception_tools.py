@@ -109,11 +109,6 @@ def test_check_span_1_is_valid(interval, span):
     assert check_span(interval, span) == 1
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="check_span compares span against the whole SPAN_M/SPAN_H list, so every valid span is reset to 1",
-)
 @pytest.mark.parametrize(
     "interval, span",
     [("HOUR", 2), ("HOUR", 4), ("HOUR", 8),
@@ -121,3 +116,13 @@ def test_check_span_1_is_valid(interval, span):
 )
 def test_check_span_keeps_valid_span(interval, span):
     assert check_span(interval, span) == span
+
+
+@pytest.mark.parametrize("interval, span", [("HOUR", "4"), ("MINUTE", "15")])
+def test_check_span_accepts_numeric_strings(interval, span):
+    assert check_span(interval, span) == int(span)
+
+
+@pytest.mark.parametrize("span", [None, "abc", 2.5])
+def test_check_span_non_numeric_falls_back_to_1(span):
+    assert check_span("HOUR", span) == 1

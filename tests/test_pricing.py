@@ -136,11 +136,6 @@ def test_get_ohlc_span_forced_to_1_for_day(rsps, api, samples, sent):
     assert sent().params["span"] == "1"
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="check_span compares span against the whole SPAN_M/SPAN_H list, so a valid span is always reset to 1",
-)
 def test_get_ohlc_valid_span_is_sent(rsps, api, samples, sent):
     rsps.get(f"{MARKET}/barhistory", json=samples["bars"])
 
