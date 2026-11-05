@@ -1,34 +1,43 @@
-# Optional Keyring for Secure Password Storage
-# import keyring
-import pathlib
-import sys
+"""Stream live prices for a few markets.
 
-main_directory = str(pathlib.Path(__file__).parent.parent)
-sys.path.insert(1, main_directory)
-from gcapi.gcapi_client import GCapiClient  # noqa: E402 -- after the sys.path tweak above
+Run with credentials in the environment (install the package first: pip install -e .)::
 
-# Trading Credentials
-username = "test"
-password = "test_password"
-apikey = "12345"
+    GCAPI_USERNAME=... GCAPI_PASSWORD=... GCAPI_APPKEY=... python examples/streaming_example.py
+"""
 
-# Initalize Trading Client
-GC_Client = GCapiClient(username=username, password=password, appkey=apikey)
+import os
+import time
 
-# Set the Trading Account ID in GC_Client
-a = GC_Client.get_account_info()
+from gcapi import GCapiClient
 
-# Get Market IDs for Streaming
-market_names = ["USD/JPY", "USD/CAD"]
-market_ids = []
-for market in market_names:
-    market_id = GC_Client.get_market_info(market_name=market)["Markets"][0]["MarketId"]
-    market_ids.append(market_id)
+MARKET_NAMES = ["USD/JPY", "USD/CAD"]
 
-# Initalize Streaming Client
-GC_Stream = GC_Client.init_streaming_client()
-GC_Stream.subscribe_to_streaming(market_id_list=market_ids)
 
-while True:
-    real_time_data = GC_Stream.real_time_snapshot()
-    print(real_time_data)
+def main():
+    # Optional: use the keyring package for secure password storage instead of env vars
+    client = GCapiClient(
+        username=os.environ["GCAPI_USERNAME"],
+        password=os.environ["GCAPI_PASSWORD"],
+        appkey=os.environ["GCAPI_APPKEY"],
+    )
+
+    # Set the Trading Account ID on the client
+    client.get_account_info()
+
+    # Get Market IDs for Streaming
+    market_ids = [client.get_market_info(market_name=name, get="MarketId") for name in MARKET_NAMES]
+
+    # Initialize Streaming Client
+    stream = client.init_streaming_client()
+    stream.subscribe_to_streaming(market_id_list=market_ids)
+
+    try:
+        while True:
+            print(stream.real_time_snapshot())
+            time.sleep(1)
+    except KeyboardInterrupt:
+        stream.unsubscribe_to_streaming()
+
+
+if __name__ == "__main__":
+    main()
