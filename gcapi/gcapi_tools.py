@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 # Constants
@@ -9,11 +9,13 @@ INTERVAL = ['HOUR', 'MINUTE', 'DAY', 'WEEK', 'MONTH']
 
 
 def format_date(row):
-    """ Extracts the unix timestamp from the string and converts it to a datetime object, best if used with map
-    :param row: row from a dataframe """
+    """ Extracts the unix timestamp (ms) from an API date string such as "/Date(1678406400000)/" and converts
+    it to a timezone-aware UTC datetime, best if used with map
+    :param row: row from a dataframe
+    :return: datetime with tzinfo=timezone.utc """
     row=str(row)
     unix = [int(s) for s in re.findall(r'-?\d+\.?\d*', row)]
-    dt_object = datetime.fromtimestamp(unix[0]/1000)
+    dt_object = datetime.fromtimestamp(unix[0]/1000, tz=timezone.utc)
     return(dt_object)
 
 

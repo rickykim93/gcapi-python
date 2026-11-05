@@ -225,11 +225,6 @@ def test_get_ohlc_include_partial_appends_forming_bar(rsps, api, samples):
     assert df["BarDate"].iloc[-1] == df["BarDate"].max()
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="issue #10: local-time conversion; BarDate should be tz-aware UTC",
-)
 def test_get_ohlc_bar_dates_are_utc(rsps, api, samples):
     rsps.get(f"{MARKET}/barhistory", json=samples["bars"])
 

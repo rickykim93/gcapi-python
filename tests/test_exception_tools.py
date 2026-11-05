@@ -64,11 +64,6 @@ def test_format_date_uses_first_number_only(raw):
     assert format_date(raw) == format_date(f"/Date({MS_2023_03_10_UTC})/")
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="issue #10: local-time conversion; format_date uses datetime.fromtimestamp (local tz) instead of UTC",
-)
 def test_format_date_is_utc():
     assert format_date(f"/Date({MS_2023_03_10_UTC})/") == datetime(2023, 3, 10, tzinfo=timezone.utc)
     assert format_date(f"/Date({MS_2023_03_10_UTC})/").tzinfo is not None
