@@ -261,6 +261,51 @@ class GCapiClient:
 		resp = json.loads(r.text)
 		return resp
 
+	def update_trade(self, order_id, quantity, direction, offer_price=None, bid_price=None, trading_acc_id=None,
+					 market_id=None, market_name=None, stop_loss=None, take_profit=None, price_tolerance=None):
+		"""
+		Updates an existing trade order (e.g. to add or change its stop loss / take profit)
+		:param order_id: order ID of the trade to update
+		:param quantity: quantity of the trade
+		:param direction: buy or sell (direction of the original trade)
+		:param offer_price: offer price; sent only if given
+		:param bid_price: bid price; sent only if given
+		:param trading_acc_id: trading account ID
+		:param market_id: market ID
+		:param market_name: market name
+		:param stop_loss: stop loss price
+		:param take_profit: take profit price
+		:param price_tolerance: acceptable slippage in price points; sent only if given
+		:return: API response
+		"""
+		if trading_acc_id is None:
+			trading_acc_id = self.trading_account_id
+		if market_id is None:
+			market_id = self.market_id
+		if market_name is None:
+			market_name = self.market_name
+		direction, opp_direction = self._directions(direction)
+		trade_details = {
+			"OrderId": order_id,
+			"Direction": direction,
+			"MarketId": market_id,
+			"Quantity": quantity,
+			"MarketName": market_name,
+			"TradingAccountId": trading_acc_id,
+		}
+		if offer_price is not None:
+			trade_details['OfferPrice'] = offer_price
+		if bid_price is not None:
+			trade_details['BidPrice'] = bid_price
+		if price_tolerance is not None:
+			trade_details['PriceTolerance'] = price_tolerance
+		ifdone = self._if_done(quantity, opp_direction, stop_loss, take_profit)
+		if ifdone:
+			trade_details['IfDone'] = ifdone
+		r = self.session.post(self.rest_url + "/order/updatetradeorder", json=trade_details)
+		resp = json.loads(r.text)
+		return resp
+
 	def list_open_positions(self, trading_acc_id=None):
 		"""
 		Returns List of Open Positons in Trading Account
