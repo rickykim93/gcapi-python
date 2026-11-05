@@ -1,5 +1,6 @@
 import re
 from datetime import datetime, timezone
+from typing import Any
 
 
 # Constants
@@ -8,7 +9,7 @@ SPAN_H = [1, 2, 4, 8] # Span intervals for hours
 INTERVAL = ['HOUR', 'MINUTE', 'DAY', 'WEEK', 'MONTH']
 
 
-def format_date(row):
+def format_date(row: Any) -> datetime:
     """ Extracts the unix timestamp (ms) from an API date string such as "/Date(1678406400000)/" and converts
     it to a timezone-aware UTC datetime, best if used with map
     :param row: row from a dataframe
@@ -19,7 +20,7 @@ def format_date(row):
     return(dt_object)
 
 
-def check_span(interval, span):
+def check_span(interval: str, span: Any) -> int:
     """ Checks if the span is correct for the specific interval
     :param interval: time interval, can be min, hour, day, week, month
     :param span: span of time, it can be 1, 2, 3, 5, etc. (int or numeric string)
@@ -37,7 +38,7 @@ def check_span(interval, span):
     return span if span in valid else 1
 
 
-def check_interval(interval):
+def check_interval(interval: str) -> str:
     """ Checks if the interval is one of the correct intervals
     :param interval: time interval, can be min, hour, day, week, month"""
     if interval not in INTERVAL:

@@ -1,3 +1,5 @@
+from typing import Any
+
 import requests
 import json
 import pandas as pd
@@ -5,8 +7,12 @@ from gcapi.gcapi_exception import GCapiException
 from gcapi.gcapi_streaming import GCapiStreamingClient
 from gcapi.gcapi_tools import format_date, check_interval, check_span
 
+# A decoded JSON object returned by the API
+JSONDict = dict[str, Any]
+
+
 class GCapiClient:
-	def __init__(self, username, password, appkey, proxies=None):
+	def __init__(self, username: str, password: str, appkey: str, proxies: dict[str, str] | None = None) -> None:
 		self.rest_url = 'https://ciapi.cityindex.com/TradingAPI'
 		headers = {'Content-Type': 'application/json'}
 		data = {
@@ -32,7 +38,7 @@ class GCapiClient:
 		self.session_id = session
 		self.username = username
 
-	def get_account_info(self, get=None):
+	def get_account_info(self, get: str | None = None) -> Any:
 		"""
 		Gets trading account general information
 		:param get: retrieve specific information (e.g. TradingAccountId)
@@ -49,7 +55,7 @@ class GCapiClient:
 		except:
 			raise GCapiException(resp)
 
-	def get_margin_info(self, get=None):
+	def get_margin_info(self, get: str | None = None) -> Any:
 		"""
 		Gets trading account margin information
 		:param get: retrieve specific information (e.g. Cash)
@@ -66,7 +72,7 @@ class GCapiClient:
 		except:
 			raise GCapiException(resp)
 
-	def init_streaming_client(self):
+	def init_streaming_client(self) -> GCapiStreamingClient:
 		"""
 		Initalizes the Streaming Client
 		:return: Streaming Client Object
@@ -75,7 +81,7 @@ class GCapiClient:
 		
 		return self.stream_client
 
-	def get_market_info(self, market_name, get=None):
+	def get_market_info(self, market_name: str, get: str | None = None) -> Any:
 		"""
 		Gets market information
 		:param market_name: market name (e.g. USD/CAD)
@@ -94,7 +100,8 @@ class GCapiClient:
 		except:
 			raise GCapiException(resp)
 
-	def get_prices(self, market_id=None, num_ticks=None, from_ts=None, to_ts=None, price_type=None):
+	def get_prices(self, market_id: int | None = None, num_ticks: int | None = None, from_ts: int | None = None,
+				   to_ts: int | None = None, price_type: str | None = None) -> float | JSONDict:
 		"""
 		Get prices
 		:param market_id: market ID
@@ -135,8 +142,9 @@ class GCapiClient:
 		except:
 			raise GCapiException(resp)
 
-	def get_ohlc(self, market_id=None, num_ticks=None, interval="HOUR", span=1, from_ts=None, to_ts=None,
-				 include_partial=False):
+	def get_ohlc(self, market_id: int | None = None, num_ticks: int | None = None, interval: str = "HOUR",
+				 span: int | str = 1, from_ts: int | None = None, to_ts: int | None = None,
+				 include_partial: bool = False) -> pd.DataFrame | JSONDict:
 		"""
 		Get the open, high, low, close of a specific market_id
 		:param market_id: market ID
@@ -190,7 +198,7 @@ class GCapiClient:
 
 
 	@staticmethod
-	def _directions(direction):
+	def _directions(direction: str) -> tuple[str, str]:
 		"""
 		Normalises direction and returns (direction, opposite_direction)
 		:param direction: buy or sell (case-insensitive)
@@ -203,7 +211,8 @@ class GCapiClient:
 		raise ValueError('Please provide buy or sell for direction')
 
 	@staticmethod
-	def _if_done(quantity, opp_direction, stop_loss=None, take_profit=None):
+	def _if_done(quantity: float, opp_direction: str, stop_loss: float | None = None,
+				 take_profit: float | None = None) -> list[JSONDict] | None:
 		"""
 		Builds the IfDone list for stop loss / take profit legs, or None if neither is set
 		"""
@@ -214,8 +223,10 @@ class GCapiClient:
 			ifdone['Limit'] = {'TriggerPrice': take_profit, "Direction": opp_direction, 'Quantity': quantity}
 		return [ifdone] if ifdone else None
 
-	def trade_order(self, quantity, offer_price, direction, trading_acc_id=None, market_id=None, market_name=None, stop_loss=None,
-					take_profit=None, trigger_price=None, bid_price=None, price_tolerance=None):
+	def trade_order(self, quantity: float, offer_price: float | None, direction: str, trading_acc_id: int | None = None,
+					market_id: int | None = None, market_name: str | None = None, stop_loss: float | None = None,
+					take_profit: float | None = None, trigger_price: float | None = None,
+					bid_price: float | None = None, price_tolerance: float | None = None) -> JSONDict:
 		"""
 		Makes a new trade order
 		:param quantity: quantity to trade
@@ -261,8 +272,10 @@ class GCapiClient:
 		resp = json.loads(r.text)
 		return resp
 
-	def update_trade(self, order_id, quantity, direction, offer_price=None, bid_price=None, trading_acc_id=None,
-					 market_id=None, market_name=None, stop_loss=None, take_profit=None, price_tolerance=None):
+	def update_trade(self, order_id: int, quantity: float, direction: str, offer_price: float | None = None,
+					 bid_price: float | None = None, trading_acc_id: int | None = None, market_id: int | None = None,
+					 market_name: str | None = None, stop_loss: float | None = None, take_profit: float | None = None,
+					 price_tolerance: float | None = None) -> JSONDict:
 		"""
 		Updates an existing trade order (e.g. to add or change its stop loss / take profit)
 		:param order_id: order ID of the trade to update
@@ -306,7 +319,7 @@ class GCapiClient:
 		resp = json.loads(r.text)
 		return resp
 
-	def list_open_positions(self, trading_acc_id=None):
+	def list_open_positions(self, trading_acc_id: int | None = None) -> JSONDict:
 		"""
 		Returns List of Open Positons in Trading Account
 		"""
@@ -319,7 +332,7 @@ class GCapiClient:
 
 		return resp
 		
-	def list_active_orders(self, trading_acc_id=None):
+	def list_active_orders(self, trading_acc_id: int | None = None) -> JSONDict:
 		"""
 		Returns List of Active Order in Trading Account
 		"""
@@ -333,7 +346,7 @@ class GCapiClient:
 		
 		return resp
 		
-	def cancel_order(self, order_id, trading_acc_id=None, market_id=None):
+	def cancel_order(self, order_id: int, trading_acc_id: int | None = None, market_id: int | None = None) -> JSONDict:
 		"""
 		Cancels an Active Order
 		:param order_id: Order ID of the Order to Cancel

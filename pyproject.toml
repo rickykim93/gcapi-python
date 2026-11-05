@@ -1,0 +1,49 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gcapi-python"
+version = "0.1.0"
+description = "Unofficial Python library for the Gain Capital (Forex.com) REST API"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Kyu Mok (Ricky) Kim", email = "rickykim93@hotmail.com" }]
+keywords = ["forex", "trading", "gain capital", "forex.com", "city index", "api"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Typing :: Typed",
+]
+dependencies = [
+    "requests>=2.22.0",
+    "pandas>=0.23.4",
+    "lightstreamer-client>=0.1",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0",
+    "responses>=0.23.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/rickykim93/gcapi-python"
+Issues = "https://github.com/rickykim93/gcapi-python/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["gcapi"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
