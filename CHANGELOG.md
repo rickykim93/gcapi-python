@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses
 [Semantic Versioning](https://semver.org/).
 
-## [0.1.0] - Unreleased
+## [0.1.0] - 2026-11-05
 
 ### ⚠️ Breaking changes
 
@@ -83,7 +83,7 @@ All notable changes to this project are documented here. The format follows
 Earlier releases (0.0.1–0.0.8, 2020–2021) are listed on
 [PyPI](https://pypi.org/project/gcapi-python/#history).
 
-[0.1.0]: https://github.com/rickykim93/gcapi-python/compare/v0.0.9...HEAD
+[0.1.0]: https://github.com/rickykim93/gcapi-python/compare/v0.0.9...v0.1.0
 [0.0.9]: https://github.com/rickykim93/gcapi-python/releases/tag/v0.0.9
 [#8]: https://github.com/rickykim93/gcapi-python/pull/8
 [#9]: https://github.com/rickykim93/gcapi-python/pull/9
