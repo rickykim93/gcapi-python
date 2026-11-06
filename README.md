@@ -237,6 +237,24 @@ ruff check . && ruff format --check .
 
 CI runs the same checks on Python 3.10–3.13 for every push and pull request.
 
+### Live integration tests (opt-in)
+
+`tests/integration/` holds tests that call the real API. They are marked `integration` and are
+skipped unless credentials are set, and CI never runs them. Use a **demo account**.
+
+```bash
+export GCAPI_USERNAME=... GCAPI_PASSWORD=... GCAPI_APPKEY=...
+export GCAPI_MARKET="EUR/USD"    # optional, the default
+pytest -m integration -v         # read-only tests: account, prices, OHLC, listings
+
+GCAPI_ALLOW_ORDERS=1 pytest -m integration -v   # also place and cancel orders
+```
+
+The order tests only place pending stop/limit orders about 10% away from the market, so they
+can't fill, and they cancel every order they place, even when a test fails. They don't place
+market orders, so `update_trade` (which needs an open trade) isn't covered. The order size is
+`GCAPI_ORDER_QUANTITY` (default 1000). Orders may be rejected while the market is closed.
+
 ## Changelog
 
 See [CHANGELOG.md](https://github.com/rickykim93/gcapi-python/blob/master/CHANGELOG.md).

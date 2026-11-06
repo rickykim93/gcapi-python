@@ -54,6 +54,9 @@ packages = ["gcapi"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "integration: live API tests; need GCAPI_USERNAME/GCAPI_PASSWORD/GCAPI_APPKEY (see tests/integration/conftest.py)",
+]
 
 [tool.coverage.run]
 source = ["gcapi"]
