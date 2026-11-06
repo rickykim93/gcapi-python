@@ -25,6 +25,11 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+> **Not yet verified against the live API:** `update_trade()`, `bid_price` / `price_tolerance` and
+> `MarketId` on `cancel_order()` follow PR #13's real-world usage but haven't been tested against
+> the live API by the maintainer. Reports of what works or fails are very welcome as
+> [issues](https://github.com/rickykim93/gcapi-python/issues).
+
 - `update_trade()` to update an existing trade, e.g. to add or move its stop loss / take profit.
   Thanks to **clemstar** ([#13]).
 - `trade_order(..., bid_price=None, price_tolerance=None)`: send `BidPrice` (needed for some
@@ -41,6 +46,8 @@ All notable changes to this project are documented here. The format follows
 - `GCapiClient` exported via `__all__`; `str(GCapiException)` now shows the error payload.
 - A mocked test suite, `[test]` and `[dev]` extras, ruff linting/formatting, and GitHub Actions CI
   on Python 3.10–3.13.
+- Opt-in live integration tests in `tests/integration/` (`pytest -m integration`), skipped without
+  credentials. Order tests also need `GCAPI_ALLOW_ORDERS=1`.
 
 ### Fixed
 

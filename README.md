@@ -129,6 +129,12 @@ daily = api.get_ohlc(num_ticks=20, interval="DAY", include_partial=True)
 
 ### Trading
 
+> **Not yet verified against the live API.** `update_trade`, `bid_price` / `price_tolerance` and
+> `MarketId` on `cancel_order` are based on how [PR #13](https://github.com/rickykim93/gcapi-python/pull/13)
+> used them against the real API, but I haven't tested them against the live API myself. If they
+> work (or don't) for you, please [open an issue](https://github.com/rickykim93/gcapi-python/issues).
+> The [integration tests](#live-integration-tests-opt-in) are an easy way to check on a demo account.
+
 Place a market order, or a stop/limit order when `trigger_price` is given:
 
 ```python

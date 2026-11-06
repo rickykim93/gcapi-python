@@ -320,6 +320,11 @@ class GCapiClient:
     ) -> JSONDict:
         """
         Updates an existing trade order (e.g. to add or change its stop loss / take profit)
+
+        Not yet verified against the live API by the maintainer: the request is based on PR #13's
+        real-world usage. Please report what works or fails at
+        https://github.com/rickykim93/gcapi-python/issues
+
         :param order_id: order ID of the trade to update
         :param quantity: quantity of the trade
         :param direction: buy or sell (direction of the original trade)
